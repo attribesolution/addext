@@ -44,7 +44,7 @@ class Api::V1::FreepbxController < ApplicationController
         CSV.open("#{@path}#{@uuid}.csv", "wb") do |csv|
             csv << ["extension", "password", "name", "voicemail", "ringtimer", "noanswer", "recording", "outboundcid", "sipname", "noanswer_cid", "busy_cid", "chanunavail_cid", "noanswer_dest", "busy_dest", "chanunavail_dest", "mohclass", "id", "tech", "dial", "devicetype", "user", "description", "emergency_cid", "recording_in_external", "recording_out_external", "recording_in_internal", "recording_out_internal", "recording_ondemand", "recording_priority", "answermode", "intercom", "cid_masquerade", "concurrency_limit", "accountcode", "allow", "avpf", "callerid", "canreinvite", "context", "defaultuser", "deny", "disallow", "dtmfmode", "encryption", "force_avp", "host", "icesupport", "namedcallgroup", "namedpickupgroup", "nat", "permit", "port", "qualify", "qualifyfreq", "rtcp_mux", "secret", "sendrpid", "sessiontimers", "sipdriver", "transport", "trustrpid", "type", "videosupport", "voicemail_enable", "voicemail_vmpwd", "voicemail_email", "voicemail_pager", "voicemail_options", "voicemail_same_exten", "disable_star_voicemail", "vmx_unavail_enabled", "vmx_busy_enabled", "vmx_temp_enabled", "vmx_play_instructions", "vmx_option_0_number", "vmx_option_1_number", "vmx_option_2_number"]
 
-            csv << [ 
+            wss_or_udp_data = [ 
                     @extension, 
                     @password, 
                     @name, 
@@ -124,6 +124,16 @@ class Api::V1::FreepbxController < ApplicationController
                     @vmx_option_2_number
                   ]
 
+            csv << wss_or_udp_data
+
+            wss_or_udp_data[35] = 'no'
+            wss_or_udp_data[42] = 'rfc2833'
+            wss_or_udp_data[43] = 'no'
+            wss_or_udp_data[44] = 'no'
+            wss_or_udp_data[54] = 'no'
+            wss_or_udp_data[59] = 'udp,tcp,tls'
+
+            csv << wss_or_udp_data
         end
 
         puts set_cmd
