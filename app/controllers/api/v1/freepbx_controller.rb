@@ -150,7 +150,7 @@ class Api::V1::FreepbxController < ApplicationController
         end
 
         def udp_extension_set
-            @extension                   = params[:extension] + 'udp'
+            @extension                   = params[:extension] + '00000000'
         end
 
         def set_extension_constructed_vars()
