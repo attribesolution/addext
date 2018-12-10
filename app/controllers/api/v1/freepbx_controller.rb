@@ -3,40 +3,35 @@ class Api::V1::FreepbxController < ApplicationController
     require 'csv'
 
     before_action :authenticate_with_token
-    before_action :set_csv_vars, :set_uuid, :set_cmd, only: [:update]
+    before_action :set_csv_vars, :set_uuid, :set_cmd
 
     # this API is to run extension adding file run command 
     def create
-        path        = params[:path]         # path of the file to be run
-        file_name   = params[:file_name]    # file name of the file to be run
-        dbhost      = params[:dbhost]       # databse hostname
-        dbname      = params[:dbname]       # database name
-        dbuser      = params[:dbuser]       # database username
-        dbpass      = params[:dbpass]       # databse password
-        extension   = params[:extension]    # extension to be added
-        firstname   = params[:firstname]    # firstname of the extension
-        lastname    = params[:lastname]     # lastname of the extension
-        secret      = params[:secret]       # secret of the extension
 
-        # command string to execute
-        cmplt_cmd   =   "#{path}" + 
-                        "#{file_name}"  + ' ' + 
-                        "#{dbhost}"     + ' ' + 
-                        "#{dbname}"     + ' ' + 
-                        "#{dbuser}"     + ' ' + 
-                        "#{dbpass}"     + ' ' + 
-                        "#{extension}"  + ' ' + 
-                        "#{firstname}"  + ' ' + 
-                        "#{lastname}"   + ' ' + 
-                        "#{secret}"  
+        CSV.open("#{@path}#{@uuid}.csv", "wb") do |csv|
+            csv << set_labels()
 
-        puts cmplt_cmd
+            wss_extension_set() # set wss extension
+            set_extension_constructed_vars() # set wss's extension based variables accrodingly
+            set_wss_options()   # set wss variables accrodingly
+
+            csv << set_wss__udp_data()
+
+            udp_extension_set() # set udp extension
+            set_extension_constructed_vars() # set udp's extension based variables accrodingly
+            set_udp_options() # set udp variables accrodingly
+            
+            csv << set_wss__udp_data()
+        end
+
+        puts set_cmd
         
         respond_to do |format|
             format.json { 
-                render :json => system( cmplt_cmd ), status: 200 # complete file run command execution
+		    render :json => { executed: system( set_cmd ) }, status: 200 
             }
         end     
+
     end
 
     def update
@@ -73,7 +68,6 @@ class Api::V1::FreepbxController < ApplicationController
 
         def set_csv_vars
             # variables passed as params
-            @path                        = params[:path]
             @name                        = params[:name] 
             @secret                      = params[:secret]
 
@@ -81,6 +75,7 @@ class Api::V1::FreepbxController < ApplicationController
             @description                 = @name
 
             # constants
+            @path                        = ENV["CSV_PATH_TO_SAVE"]
             @password                    = nil
             @voicemail                   = 'novm'
             @ringtimer                   = '0'
