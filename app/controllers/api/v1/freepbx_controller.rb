@@ -3,7 +3,7 @@ class Api::V1::FreepbxController < ApplicationController
     require 'csv'
 
     before_action :authenticate_with_token
-    before_action :set_csv_vars, :set_uuid, :set_cmd
+    before_action :set_csv_vars, :set_uuid, :set_cmd, [:create, :update]
 
     # this API is to run extension adding file run command 
     def create
@@ -28,7 +28,7 @@ class Api::V1::FreepbxController < ApplicationController
         
         respond_to do |format|
             format.json { 
-		    render :json => { executed: system( set_cmd ) }, status: 200 
+		        render :json => { executed: system( set_cmd ) }, status: 200 
             }
         end     
 
@@ -56,11 +56,21 @@ class Api::V1::FreepbxController < ApplicationController
         
         respond_to do |format|
             format.json { 
-		    render :json => { executed: system( set_cmd ) }, status: 200 
+		        render :json => { executed: system( set_cmd ) }, status: 200 
             }
         end     
     end 
 
+    def delete
+        delete_script = "/root/script/unregister.sh #{params[:extension]}"         
+
+        respond_to do |format|
+            format.json { 
+		        render :json => { executed: system( delete_script ) }, status: 200 
+            }
+        end     
+    end
+    
     private
         def authenticate_with_token
             render :json => {message: 'Unable to Authorize'}, status: 400 if !(request.headers['Authorization'] == ENV["API_AUTHORIZATION"])
