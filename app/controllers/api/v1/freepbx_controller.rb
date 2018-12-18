@@ -26,11 +26,11 @@ class Api::V1::FreepbxController < ApplicationController
 
         puts set_cmd
         
-        respond_to do |format|
-            format.json { 
+        # respond_to do |format|
+        #     format.json { 
 		        render :json => { executed: system( set_cmd ) }, status: 200 
-            }
-        end     
+        #     }
+        # end     
 
     end
 
@@ -54,21 +54,21 @@ class Api::V1::FreepbxController < ApplicationController
 
         puts set_cmd
         
-        respond_to do |format|
-            format.json { 
+        # respond_to do |format|
+        #     format.json { 
 		        render :json => { executed: system( set_cmd ) }, status: 200 
-            }
-        end     
+        #     }
+        # end     
     end 
 
     def delete
         delete_script = "/root/script/unregister.sh #{params[:extension]}"         
 
-        respond_to do |format|
-            format.json { 
+        # respond_to do |format|
+        #     format.json { 
 		        render :json => { executed: system( delete_script ) }, status: 200 
-            }
-        end     
+        #     }
+        # end     
     end
     
     private
