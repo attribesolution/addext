@@ -3,7 +3,7 @@ class Api::V1::FreepbxController < ApplicationController
     require 'csv'
 
     before_action :authenticate_with_token
-    before_action :set_csv_vars, :set_uuid, :set_cmd, [:create, :update]
+    before_action :set_csv_vars, :set_uuid, :set_cmd, only: [:create, :update]
 
     # this API is to run extension adding file run command 
     def create
